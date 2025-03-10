@@ -6,7 +6,7 @@ export interface Plan {
   _id: string;
   name: string;
   description?: string;
-  dailyLimit: number;
+  totalLimit: number;
   price: number;
   currency: string;
   isActive: boolean;

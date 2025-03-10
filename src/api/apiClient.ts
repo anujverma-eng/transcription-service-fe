@@ -1,5 +1,6 @@
 // src/api/apiClient.ts
 import axios, { AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { refreshTokens } from './authApi';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
 
@@ -35,7 +36,7 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     // Skip token refresh for auth endpoints
-    const isAuthEndpoint = originalRequest?.url?.includes('/auth/');
+    const isAuthEndpoint = originalRequest?.url?.match(/\/auth\/(login|signup|refresh|logout|forgot-password)/);
     
     if (error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint) {
       if (isRefreshing) {
@@ -51,7 +52,7 @@ apiClient.interceptors.response.use(
 
       try {
         // call /auth/refresh
-        await apiClient.post('/auth/refresh');
+        await refreshTokens()
 
         isRefreshing = false;
         processQueue(null, true);

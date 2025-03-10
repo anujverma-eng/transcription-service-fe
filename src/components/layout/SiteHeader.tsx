@@ -1,11 +1,4 @@
-// Mobile Navigation Props
-interface MobileNavMenuProps {
-  isLoggedIn: boolean;
-  isAdmin: boolean;
-  isPaidPlan: boolean;
-  isAuthPage: boolean;
-  handleLogout: () => void;
-}
+// src/components/SiteHeader.tsx
 
 import { logoutUser } from "@/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -24,14 +17,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Gem, LayoutDashboard, LogOut, Menu, Rocket, Settings, Shield, User } from "lucide-react";
+import { Gem, LayoutDashboard, LogOut, Menu, Rocket, Settings, Shield, User, Zap } from "lucide-react";
 
 export default function SiteHeader() {
   const auth = useAppSelector((state) => state.auth);
-  console.log(auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Determine if current page is Dashboard – if so, hide the Dashboard link
+  const isOnDashboard = location.pathname.startsWith("/dashboard");
 
   const isAuthPage = location.pathname.startsWith("/reset-password") || location.pathname.startsWith("/auth");
 
@@ -46,7 +41,7 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 shadow-md">
+    <header className="sticky top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 shadow-md transition-colors duration-200">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Brand Logo */}
         <Link
@@ -70,11 +65,11 @@ export default function SiteHeader() {
               <path d="M3 12h18" />
             </svg>
           </span>
-          TranscribePro
+          AudioLekh
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-3">
           {!isLoggedIn && !isAuthPage && (
             <div className="flex items-center gap-2">
               <Button
@@ -89,37 +84,50 @@ export default function SiteHeader() {
                 className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
                 onClick={() => navigate("/auth?mode=signup")}
               >
-                Get Started
-                <Rocket className="ml-2 h-4 w-4" />
+                Get Started <Rocket className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
 
           {isLoggedIn && (
             <>
-              <NavLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />}>
-                Dashboard
-              </NavLink>
+              {!isOnDashboard && (
+                <NavLink to="/dashboard" icon={<LayoutDashboard className="h-4 w-4" />}>
+                  Dashboard
+                </NavLink>
+              )}
 
               {!isPaidPlan && (
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg transition-all"
+                <Link
+                  to="/plans"
+                  className="
+                   inline-flex items-center gap-2 
+                   px-4 py-2 text-white
+                   bg-gradient-to-r from-blue-600 to-purple-600
+                   rounded-md shadow-md
+                   transition-transform
+                   hover:scale-105
+                   active:scale-95
+                 "
                 >
-                  <Link to="/plans">
-                    <Gem className="mr-2 h-4 w-4" />
-                    Upgrade
-                    <span className="ml-2 bg-white/10 px-2 py-1 rounded-full text-xs">PRO</span>
-                  </Link>
-                </Button>
+                  <Zap className="h-4 w-4" />
+                  <span>Upgrade</span>
+                  <span
+                    className="
+                     ml-2 text-xs py-0.5 px-1.5
+                     rounded-full bg-white/20
+                   "
+                  >
+                    PRO
+                  </span>
+                </Link>
               )}
 
               {isAdmin && (
                 <NavLink to="/admin" icon={<Shield className="h-4 w-4" />}>
-                  Admin
+                  Admin Dashboard
                   <Badge variant="outline" className="ml-2">
-                    PRO
+                    ADMIN
                   </Badge>
                 </NavLink>
               )}
@@ -128,7 +136,7 @@ export default function SiteHeader() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="rounded-full px-2 space-x-2 hover:bg-gray-100 dark:hover:bg-gray-800 group"
+                    className="rounded-full px-2 space-x-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-150 group"
                   >
                     <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center relative">
                       <User className="h-4 w-4 text-white" />
@@ -139,8 +147,11 @@ export default function SiteHeader() {
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuLabel className="flex items-center">
+                <DropdownMenuContent
+                  className="w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 animate-fade-in"
+                  align="end"
+                >
+                  <DropdownMenuLabel className="flex items-center gap-2 p-2">
                     <User className="mr-2 h-4 w-4" />
                     <div className="flex flex-col">
                       <span className="font-medium">{auth.user?.name}</span>
@@ -148,18 +159,26 @@ export default function SiteHeader() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
+                  {!isOnDashboard && (
+                    <DropdownMenuItem
+                      onClick={() => navigate("/dashboard")}
+                      className="cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    onClick={() => navigate("/settings")}
+                    className="cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                    My Account
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}
-                    className="cursor-pointer text-red-600 hover:!bg-red-50 dark:text-red-400"
+                    className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900 transition-colors"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
@@ -195,7 +214,7 @@ function NavLink({ to, icon, children }: { to: string; icon?: React.ReactNode; c
       <Button
         variant="ghost"
         className={cn(
-          "text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 gap-2",
+          "text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 gap-2 transition-colors",
           isActive && "text-blue-600 dark:text-blue-400 font-semibold"
         )}
       >
@@ -206,7 +225,15 @@ function NavLink({ to, icon, children }: { to: string; icon?: React.ReactNode; c
   );
 }
 
-// Enhanced Mobile NavMenu
+// Enhanced Mobile NavMenu Component
+interface MobileNavMenuProps {
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+  isPaidPlan: boolean;
+  isAuthPage: boolean;
+  handleLogout: () => void;
+}
+
 function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogout }: MobileNavMenuProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -222,19 +249,15 @@ function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogo
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg w-[280px] sm:w-[320px] border-l dark:border-gray-800"
+        className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg w-[280px] sm:w-[320px] border-l dark:border-gray-800 transition-all"
       >
         <SheetHeader className="mb-6">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              TranscribePro
+              AudioLekh
             </SheetTitle>
-            {/* <SheetClose>
-              <X className="h-6 w-6 text-gray-600 dark:text-gray-400" />
-            </SheetClose> */}
           </div>
         </SheetHeader>
-
         <nav className="flex flex-col gap-1">
           {!isLoggedIn && !isAuthPage && (
             <SheetClose asChild>
@@ -244,7 +267,7 @@ function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogo
                 onClick={() => navigate("/auth?mode=signup")}
               >
                 Get Started
-                <Rocket className="ml-2 h-4 w-1/2" />
+                <Rocket className="ml-2 h-4 w-4" />
               </Button>
             </SheetClose>
           )}
@@ -255,7 +278,7 @@ function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogo
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start text-lg py-5",
+                    "w-full justify-start text-lg py-5 transition-colors",
                     isActive("/dashboard") && "text-blue-600 dark:text-blue-400"
                   )}
                   onClick={() => navigate("/dashboard")}
@@ -269,7 +292,7 @@ function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogo
                 <SheetClose asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-lg py-5 bg-gradient-to-r from-purple-500/10 to-pink-500/10"
+                    className="w-full justify-start text-lg py-5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 transition-colors"
                     onClick={() => navigate("/upgrade")}
                   >
                     <Gem className="mr-3 h-5 w-5" />
@@ -286,7 +309,7 @@ function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogo
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full justify-start text-lg py-5",
+                      "w-full justify-start text-lg py-5 transition-colors",
                       isActive("/admin") && "text-blue-600 dark:text-blue-400"
                     )}
                     onClick={() => navigate("/admin")}
@@ -301,7 +324,7 @@ function MobileNavMenu({ isLoggedIn, isAdmin, isPaidPlan, isAuthPage, handleLogo
                 <SheetClose asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-lg py-5 text-red-600 hover:text-red-700 dark:text-red-400"
+                    className="w-full justify-start text-lg py-5 text-red-600 hover:text-red-700 dark:text-red-400 transition-colors"
                     onClick={handleLogout}
                   >
                     <LogOut className="mr-3 h-5 w-5" />
