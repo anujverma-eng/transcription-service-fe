@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 export default function PlansPage() {
   const dispatch = useAppDispatch()
   const { plans, status, error } = useAppSelector((state) => state.public)
-
+  
   useEffect(() => {
     if (plans.length === 0) dispatch(fetchPublicPlans())
   }, [dispatch, plans.length])
@@ -91,7 +91,7 @@ export default function PlansPage() {
                   <div className="flex items-center gap-2 mb-6 p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
                     <Zap className="h-5 w-5 text-blue-500" />
                     <span className="text-gray-600 dark:text-gray-300">
-                      {plan.dailyLimit} mins/day transcription
+                      {plan.totalLimit} mins/day transcription
                     </span>
                   </div>
                 </div>

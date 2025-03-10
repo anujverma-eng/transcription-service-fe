@@ -44,3 +44,7 @@ export async function getProfile(): Promise<ProfileResponse> {
     subscription: payload.subscription,
   };
 }
+
+export async function refreshTokens(): Promise<any> {
+  await apiClient.post('/auth/refresh')
+}

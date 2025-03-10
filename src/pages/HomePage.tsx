@@ -11,7 +11,6 @@ import {
   ChevronDown,
   Clock,
   FileText,
-  Globe,
   GraduationCap,
   Languages,
   Mic,
@@ -85,11 +84,13 @@ export default function HomePage() {
     return (
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {/* Animated Sound Waves */}
+        
+        
         <motion.div
           className="absolute w-96 h-96 rounded-full border-2 border-blue-400/30"
           animate={{
-            scale: [1, 12],
-            opacity: [0.1, 0],
+            scale: [1, 5],
+            opacity: [1, 0],
           }}
           transition={{
             duration: 4,
@@ -104,7 +105,7 @@ export default function HomePage() {
             opacity: [0.8, 0],
           }}
           transition={{
-            duration: 3.5,
+            duration: 4,
             repeat: Infinity,
             ease: "easeOut",
             delay: 0.5,
@@ -117,7 +118,7 @@ export default function HomePage() {
             opacity: [0.8, 0],
           }}
           transition={{
-            duration: 3,
+            duration: 2,
             repeat: Infinity,
             ease: "easeOut",
             delay: 1,
@@ -284,57 +285,60 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4">
+        {/* How It Works Section */}
+        <section className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Transform Audio in 3 Simple Steps
             </h2>
           </div>
-
+  
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              className="p-8 bg-white dark:bg-gray-800 rounded-2xl text-center"
+              className="p-8 bg-white/5 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl border border-gray-200/10"
             >
-              <div className="text-5xl mb-4">1</div>
+              <div className="text-5xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">1</div>
               <h3 className="text-2xl font-semibold mb-4">Upload Audio/Video</h3>
               <p className="text-gray-600 dark:text-gray-400">
                 Drag & drop files or record directly. Supports MP3, WAV, MP4, and more
               </p>
             </motion.div>
-
-            {/* Add animated processing visualization */}
-            <motion.div
-              className="relative flex items-center justify-center"
-              animate={{
-                rotate: [0, 360],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            >
-              <Globe className="h-24 w-24 text-blue-400 opacity-50" />
+  
+            <motion.div className="relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl" />
+              <motion.div
+                className="relative"
+                animate={{
+                  rotate: [0, 360],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                <div className="p-8 bg-white/5 dark:bg-gray-800/50 backdrop-blur-lg rounded-full border-2 border-purple-500/30">
+                  <Mic className="h-24 w-24 text-purple-500" />
+                </div>
+              </motion.div>
             </motion.div>
-
+  
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              className="p-8 bg-white dark:bg-gray-800 rounded-2xl text-center"
+              className="p-8 bg-white/5 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl border border-gray-200/10"
             >
-              <div className="text-5xl mb-4">3</div>
+              <div className="text-5xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">3</div>
               <h3 className="text-2xl font-semibold mb-4">Download & Share</h3>
               <p className="text-gray-600 dark:text-gray-400">
                 Export in any format, share securely, or integrate with your tools
               </p>
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
+  
 
       {/* Features Section */}
       <section className="py-20 bg-white dark:bg-gray-950">
@@ -413,7 +417,7 @@ export default function HomePage() {
                     <div className="p-4 bg-blue-50 dark:bg-gray-700 rounded-lg mb-6">
                       <div className="flex items-center justify-center gap-2">
                         <Zap className="h-5 w-5 text-blue-500" />
-                        <span className="text-gray-600 dark:text-gray-300">{plan.dailyLimit} mins/day included</span>
+                        <span className="text-gray-600 dark:text-gray-300">{plan.totalLimit} mins/day included</span>
                       </div>
                     </div>
                   </div>

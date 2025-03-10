@@ -14,7 +14,7 @@ interface User {
   role?: string;
   name?: string;
   subscriptionPlan?: string;
-  dailyLimit?: number;
+  totalLimit?: number;
 }
 
 interface AuthState {
@@ -107,6 +107,15 @@ export const getProfile = createAsyncThunk('auth/getProfile', async (_, thunkAPI
   }
 });
 
+export const getRefreshTokens = createAsyncThunk('auth/refresh', async (_, thunkAPI) => {
+  try {
+    const profile = await authApi.refreshTokens()
+    return profile;
+  } catch (err: any) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message?.message || err.message || 'User Logged Out!!');
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -132,7 +141,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
-          dailyLimit: subscription.dailyLimit,
+          totalLimit: subscription.totalLimit,
         };
       })
       .addCase(signUpUser.rejected, (state, action) => {
@@ -155,7 +164,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
-          dailyLimit: subscription.dailyLimit,
+          totalLimit: subscription.totalLimit,
         };
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -192,7 +201,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
-          dailyLimit: subscription.dailyLimit,
+          totalLimit: subscription.totalLimit,
         };
       })
       .addCase(resetPassword.rejected, (state, action) => {
@@ -229,7 +238,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
-          dailyLimit: subscription.dailyLimit,
+          totalLimit: subscription.totalLimit,
         };
       })
       .addCase(completeGoogleAuth.rejected, (state, action) => {
@@ -252,13 +261,17 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
-          dailyLimit: subscription.dailyLimit,
+          totalLimit: subscription.totalLimit,
         };
       })
       .addCase(getProfile.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      });
+      })
+      .addCase(getRefreshTokens.rejected, (state, action)=> {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
   },
 });
 

@@ -44,7 +44,7 @@ export interface ProfileResponse {
   subscription: {
     _id: string;
     isPaid: boolean;
-    dailyLimit: number;
+    totalLimit: number;
     endDate: string | null;
     // ...
   };
