@@ -2,12 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { fetchPublicFeedback, fetchPublicPlans } from "@/features/public/publicSlice";
-import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { motion } from "framer-motion";
 import {
   BadgeCheck,
-  Check,
   ChevronDown,
   Clock,
   FileText,
@@ -23,13 +21,14 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
+import PlansPage from "./PlansPage";
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
 
   const publicState = useAppSelector((state) => state.public);
-  const { plans, feedback, status } = publicState;
+  const { plans, feedback } = publicState;
 
   useEffect(() => {
     if (plans.length === 0) dispatch(fetchPublicPlans());
@@ -389,79 +388,15 @@ export default function HomePage() {
             </p>
           </div>
 
-          {status === "succeeded" && (
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
-              {plans.map((plan, index) => (
-                <motion.div
-                  key={plan._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  className={cn(
-                    "relative w-full max-w-md p-8 bg-gradient-to-b from-white dark:from-gray-900 to-gray-50 dark:to-gray-800 rounded-2xl shadow-xl transition-all duration-300 hover:-translate-y-4",
-                    index === 1 ? "scale-110 z-10 border-2 border-purple-500 shadow-2xl" : "border dark:border-gray-700"
-                  )}
-                >
-                  {index === 1 && (
-                    <div className="absolute top-0 right-0 bg-purple-500 text-white px-4 py-1 rounded-bl-xl rounded-tr-xl text-sm">
-                      Best Value 🔥
-                    </div>
-                  )}
+          <PlansPage/>
 
-                  <div className="mb-8 text-center">
-                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                    <div className="text-4xl font-bold mb-4">
-                      {plan.isPaid ? `$${plan.price}` : "Free"}
-                      {plan.isPaid && <span className="text-lg text-gray-500">/{plan.currency}</span>}
-                    </div>
-
-                    <div className="p-4 bg-blue-50 dark:bg-gray-700 rounded-lg mb-6">
-                      <div className="flex items-center justify-center gap-2">
-                        <Zap className="h-5 w-5 text-blue-500" />
-                        <span className="text-gray-600 dark:text-gray-300">{plan.totalLimit} mins/day included</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
-                      <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">Full Transcription</div>
-                        <div className="text-sm">99% accuracy guarantee</div>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
-                      <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">Export Formats</div>
-                        <div className="text-sm">TXT, DOCX, SRT, VTT</div>
-                      </div>
-                    </li>
-                    {plan.isPaid && (
-                      <li className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
-                        <Check className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                        <div>
-                          <div className="font-medium">Priority Processing</div>
-                          <div className="text-sm">2x faster than free tier</div>
-                        </div>
-                      </li>
-                    )}
-                  </ul>
-
-                  <Button className="w-full group" variant={index === 1 ? "default" : "outline"} size="lg">
-                    {plan.isPaid ? "Start Professional Trial" : "Get Free Account"}
-                  </Button>
-                </motion.div>
-              ))}
-            </div>
-          )}
-
-          <div className="text-center mt-12 text-gray-600 dark:text-gray-400">
+          {/* <div className="text-center mt-12 text-gray-600 dark:text-gray-400">
             Need custom solutions?{" "}
             <Link to="/enterprise" className="text-purple-600 hover:underline">
               Explore Enterprise Plans →
             </Link>
-          </div>
+          </div> */}
+          
         </div>
       </section>
 
