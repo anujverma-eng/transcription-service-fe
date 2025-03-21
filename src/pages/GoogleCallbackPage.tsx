@@ -1,5 +1,5 @@
 // src/pages/GoogleCallbackPage.tsx
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { completeGoogleAuth } from '@/features/auth/authSlice'
 import { useNavigate } from 'react-router-dom'

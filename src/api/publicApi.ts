@@ -11,6 +11,9 @@ export interface Plan {
   currency: string;
   isActive: boolean;
   isPaid: boolean;
+  slug: string;
+  sortOrder: number;
+  features: string[];
   createdAt?: string;
   updatedAt?: string;
 }

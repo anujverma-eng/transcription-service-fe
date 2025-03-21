@@ -37,6 +37,8 @@ import { BarChart2, FileAudio2, Maximize2, Menu, Minimize2, RefreshCw, UploadClo
 import { toast } from "sonner";
 import { Drawer } from "vaul";
 import { UsageStatsTable } from "@/components/UsageStatsTable";
+import { getProfile } from "@/features/auth/authSlice";
+import { paymentHistory } from "@/features/payment/paymentSlice";
 const MotionUploadCloud = motion(UploadCloud);
 
 // A helper to read audio duration
@@ -70,6 +72,17 @@ export default function Dashboard() {
   const selectedJob = useAppSelector(selectSelectedJob);
   const status = useAppSelector(selectTranscriptionStatus);
   const pagination = useAppSelector(selectPagination);
+  const { user: userDetails, status: authStatus } = useAppSelector((state) => state.auth);
+  const { history, status: paymentStatus } = useAppSelector((state) => state.payment);
+
+  console.log({
+    usage,
+    usageStats,
+    userDetails,
+    authStatus,
+    history,
+    paymentStatus,
+  })
 
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showJobDetailDialog, setShowJobDetailDialog] = useState(false);
@@ -90,6 +103,8 @@ export default function Dashboard() {
 
   // Initial fetch
   useEffect(() => {
+    dispatch(getProfile())
+    dispatch(paymentHistory())
     dispatch(fetchUsage());
     dispatch(fetchUsageStats());
     dispatch(fetchJobs({ page, limit, query: searchQuery }));

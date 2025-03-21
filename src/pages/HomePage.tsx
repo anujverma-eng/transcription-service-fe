@@ -229,7 +229,7 @@ export default function HomePage() {
                 asChild
                 className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-blue-200 to-purple-500 hover:from-blue-300 hover:to-purple-600 shadow-xl"
               >
-                <Link to="/signup">
+                <Link to="/auth?mode=signup">
                   <Zap className="mr-2 h-5 w-5" />
                   Start Free Trial - 90 mins Free
                 </Link>

@@ -180,9 +180,9 @@ const transcriptionSlice = createSlice({
     // getJobDetail
     builder
       .addCase(getJobDetail.fulfilled, (state, action) => {
-        const { jobId } = action.payload as any;
+        // const { jobId } = action.payload as any;
         // Merge partial updates into the jobs array
-        const idx = state.jobs.findIndex((j) => j._id === jobId);
+        // const idx = state.jobs.findIndex((j) => j._id === jobId);
         state.selectedJob = action.payload as any;
         // if (idx >= 0) {
         //   const updatedJob = { ...state.jobs[idx], ...rest };

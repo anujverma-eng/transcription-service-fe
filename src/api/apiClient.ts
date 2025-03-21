@@ -1,3 +1,4 @@
+/* eslint-disable */
 // src/api/apiClient.ts
 import axios, { AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { refreshTokens } from './authApi';
@@ -6,7 +7,7 @@ const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/
 
 export const apiClient = axios.create({
   baseURL,
-  withCredentials: true, // so NestJS sets httpOnly cookies
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -19,7 +20,7 @@ let failedQueue: {
   config: AxiosRequestConfig;
 }[] = [];
 
-function processQueue(error: any, success: boolean) {
+function processQueue(error: any, _success: boolean) {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -27,6 +28,7 @@ function processQueue(error: any, success: boolean) {
       prom.resolve(prom.config);
     }
   });
+  console.log("processQueue: _success", _success);
   failedQueue = [];
 }
 
@@ -43,7 +45,7 @@ apiClient.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject, config: originalRequest });
         })
-          .then((reqConfig) => apiClient(reqConfig))
+          .then((reqConfig) => apiClient(reqConfig as AxiosRequestConfig))
           .catch((err) => Promise.reject(err));
       }
 

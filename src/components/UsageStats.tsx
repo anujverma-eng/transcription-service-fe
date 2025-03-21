@@ -6,8 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Activity, BarChart2, BatteryCharging, ChevronRight, Clock, Lightbulb } from "lucide-react";
-import { useTypewriter, Cursor } from "react-simple-typewriter";
+import { Activity, BarChart2, BatteryCharging, Clock, Lightbulb } from "lucide-react";
+import { Cursor, useTypewriter } from "react-simple-typewriter";
 
 interface UsageStatsProps {
   usage: {
@@ -69,7 +69,7 @@ export function UsageStats({ usage, status }: UsageStatsProps) {
 
           {/* Three mini-cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Daily Limit */}
+            {/* Total Limit */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
@@ -83,15 +83,14 @@ export function UsageStats({ usage, status }: UsageStatsProps) {
                   <Clock className="text-[#8B5CF6]" size={24} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 font-medium">Daily Limit</p>
+                  <p className="text-sm text-gray-500 font-medium">Total Limit</p>
                   <p className="text-2xl font-bold text-[#1F2937]">{totalLimit}</p>
-                  <p className="text-xs text-gray-500">minutes per day</p>
+                  <p className="text-xs text-gray-500">minutes</p>
                 </div>
               </div>
-              <ChevronRight className="text-gray-400" />
             </motion.div>
 
-            {/* Used Today */}
+            {/* Total Used */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
@@ -105,12 +104,12 @@ export function UsageStats({ usage, status }: UsageStatsProps) {
                   <BarChart2 className="text-[#3B82F6]" size={24} />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 font-medium">Used Today</p>
+                  <p className="text-sm text-gray-500 font-medium">Total Used</p>
                   <p className="text-2xl font-bold text-[#1F2937]">{used.toFixed(2)}</p>
                   <p className="text-xs text-gray-500">minutes</p>
                 </div>
               </div>
-              <ChevronRight className="text-gray-400" />
+              {/* <ChevronRight className="text-gray-400" /> */}
             </motion.div>
 
             {/* Remaining */}
@@ -132,7 +131,7 @@ export function UsageStats({ usage, status }: UsageStatsProps) {
                   <p className="text-xs text-gray-500">minutes</p>
                 </div>
               </div>
-              <ChevronRight className="text-gray-400" />
+              {/* <ChevronRight className="text-gray-400" /> */}
             </motion.div>
           </div>
 

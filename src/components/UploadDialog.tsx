@@ -279,7 +279,7 @@ export function UploadDialog({
                       {selectedFile.name}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {formatFileSize(selectedFile.size)}
+                      {formatFileSize(selectedFile.size || 0)}
                     </p>
                   </div>
                 </div>
@@ -473,10 +473,10 @@ export function UploadDialog({
                   <FileAudio2 className="text-purple-600 w-6 h-6" />
                   <div className="flex flex-col">
                     <p className="text-sm font-medium text-gray-800 truncate max-w-[200px]">
-                      {selectedFile.name}
+                      {selectedFile?.name || ""}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {formatFileSize(selectedFile.size)}
+                      {formatFileSize(selectedFile?.size || 0)}
                     </p>
                   </div>
                 </div>

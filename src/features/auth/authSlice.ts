@@ -14,6 +14,7 @@ interface User {
   role?: string;
   name?: string;
   subscriptionPlan?: string;
+  isPaid?: boolean;
   totalLimit?: number;
 }
 
@@ -141,6 +142,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
+          isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
         };
       })
@@ -164,6 +166,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
+          isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
         };
       })
@@ -201,6 +204,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
+          isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
         };
       })
@@ -238,6 +242,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
+          isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
         };
       })
@@ -261,6 +266,7 @@ const authSlice = createSlice({
           name: user.name,
           role: user.role,
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
+          isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
         };
       })

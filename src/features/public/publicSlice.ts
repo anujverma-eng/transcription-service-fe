@@ -7,6 +7,7 @@ export interface PublicState {
   feedback: publicApi.Feedback[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  hasFetched: boolean;  
 }
 
 const initialState: PublicState = {
@@ -14,6 +15,7 @@ const initialState: PublicState = {
   feedback: [],
   status: "idle",
   error: null,
+  hasFetched: false, 
 };
 
 // fetch public plans
@@ -55,6 +57,7 @@ const publicSlice = createSlice({
       .addCase(fetchPublicPlans.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.plans = action.payload;
+        state.hasFetched = true; // ✅ Mark as fetched
       })
       .addCase(fetchPublicPlans.rejected, (state, action) => {
         state.status = "failed";
@@ -75,5 +78,6 @@ const publicSlice = createSlice({
       });
   },
 });
+
 
 export default publicSlice.reducer;

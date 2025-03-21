@@ -1,6 +1,4 @@
 // src/components/ui/UsageStatsTable.tsx
-
-import React from "react"
 import {
   Card,
   CardContent,
