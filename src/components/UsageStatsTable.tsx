@@ -270,7 +270,7 @@ export function UsageStatsTable({ usageStats }: UsageStatsTableProps) {
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="flex justify-center gap-4 mt-4">
+              <div className="flex justify-center gap-4">
                 {pieData.map((entry, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
                     <div

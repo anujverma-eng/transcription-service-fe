@@ -198,7 +198,6 @@ export default function Dashboard() {
     let durationSeconds = 0;
     try {
       durationSeconds = Math.floor(await getAudioDuration(selectedFile));
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast.error("Failed to read audio duration. Please try another file.");
       resetDialog();
@@ -489,7 +488,7 @@ export default function Dashboard() {
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-gray-600 transition-colors data-[state=active]:bg-white data-[state=active]:text-gray-800 data-[state=active]:shadow-sm"
               >
                 <BarChart2 className="h-4 w-4" />
-                <span>Usage Statistics</span>
+                <span>Usage</span>
               </TabsTrigger>
             </TabsList>
 
@@ -584,22 +583,24 @@ export default function Dashboard() {
         </div>
 
         {/* Buttons (New Transcription, Usage Stats Drawer, Expand/Collapse) - top-right */}
-        <div className="absolute top-2 right-2 flex items-center space-x-2">
-          {/* New Transcription Button */}
+        <div className="absolute top-2 right-2 flex items-center space-x-1 sm:space-x-2">
+          {/* New Transcription Button - Text hides on mobile when expanded */}
           <motion.button
             key="btn-transcription"
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setShowUploadDialog(true)}
-            className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-md px-3 py-2
-                       transition-transform duration-200 hover:scale-105 flex items-center space-x-1"
+            className="bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-md px-2 py-1 sm:px-3 sm:py-2
+               transition-transform duration-200 hover:scale-105 flex items-center space-x-1"
           >
-            <MotionUploadCloud className="h-5 w-5" />
-            <span>New Transcription</span>
+            <MotionUploadCloud className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className={`${expanded ? 'hidden' : 'inline'} sm:inline`}>
+              New Transcription
+            </span>
           </motion.button>
 
-          {/* Usage Stats Drawer Button */}
+          {/* Stats Button - now toggles text on mobile the same way as the transcription button */}
           {expanded && (
             <motion.button
               key="btn-drawer"
@@ -607,15 +608,15 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setDrawerOpen(true)}
-              className="bg-gray-100 hover:bg-gray-200 rounded-md px-3 py-2
-                         transition-transform duration-200 hover:scale-105 flex items-center space-x-1"
+              className="bg-gray-100 hover:bg-gray-200 rounded-md p-1.5 sm:p-2
+                 transition-transform duration-200 hover:scale-105 flex items-center"
             >
-              <Menu className="h-5 w-5" />
-              <span>Stats</span>
+              <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className={`${expanded ? 'hidden' : 'inline'} sm:inline ml-1`}>Stats</span>
             </motion.button>
           )}
 
-          {/* Expand/Collapse Button */}
+          {/* Expand/Collapse Button - Always icon-only, responsive sizing */}
           {expanded ? (
             <TooltipProvider>
               <Tooltip>
@@ -627,56 +628,34 @@ export default function Dashboard() {
                     exit={{ opacity: 0, x: 5 }}
                     transition={{ duration: 0.1 }}
                     onClick={() => setExpanded(false)}
-                    className="bg-gray-100 hover:bg-gray-200 rounded-md p-2
-                             transition-transform duration-200 hover:scale-105"
+                    className="bg-gray-100 hover:bg-gray-200 rounded-md p-1.5 sm:p-2
+                     transition-transform duration-200 hover:scale-105"
                   >
-                    <Minimize2 className="h-5 w-5" />
+                    <Minimize2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   </motion.button>
                 </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  sideOffset={5}
-                  align="center"
-                  className="bg-gray-200 text-sm text-gray-800 rounded-md shadow transition-all"
-                >
-                  <p>Collapse dashboard</p>
+                <TooltipContent side="left" className="text-sm bg-gray-800 text-white px-2 py-1 rounded-md">
+                  Collapse
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ) : (
             <TooltipProvider>
-              <Tooltip open={showInitialTooltip}>
+              <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.button
                     key="expand"
                     initial={{ opacity: 0, x: 10 }}
-                    animate={{ 
-                      opacity: 1, 
-                      x: 0,
-                      y: showInitialTooltip ? [0, -4, 0] : 0
-                    }}
-                    transition={{ 
-                      duration: 0.2,
-                      y: {
-                        duration: 0.5,
-                        repeat: 3,
-                        ease: "easeInOut"
-                      }
-                    }}
+                    animate={{ opacity: 1, x: 0 }}
                     onClick={() => setExpanded(true)}
-                    className="bg-gray-100 hover:bg-gray-200 rounded-md p-2
-                             transition-transform duration-200 hover:scale-105"
+                    className="bg-gray-100 hover:bg-gray-200 rounded-md p-1.5 sm:p-2
+                     transition-transform duration-200 hover:scale-105"
                   >
-                    <Maximize2 className="h-5 w-5" />
+                    <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5" />
                   </motion.button>
                 </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  sideOffset={5}
-                  align="center"
-                  className="bg-gray-200 text-sm text-gray-800 rounded-md shadow transition-all animate-bounce"
-                >
-                  <p>Click to expand dashboard</p>
+                <TooltipContent side="left" className="text-sm bg-gray-800 text-white px-2 py-1 rounded-md">
+                  Expand
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -691,9 +670,6 @@ export default function Dashboard() {
           <button className="hidden" />
         </DrawerTrigger>
         <DrawerContent>
-          {/* <DrawerHeader> */}
-          {/* <DrawerTitle className="text-2xl">Usage Stats</DrawerTitle> */}
-          {/* </DrawerHeader> */}
           <UsageStats usage={usage} status={status} />
         </DrawerContent>
       </Drawer.Root>

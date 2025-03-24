@@ -75,10 +75,10 @@ export default function MyAccountPage() {
         )}
         {!isLoading && (
           <Tabs defaultValue="overview" onValueChange={(val) => setActiveTab(val)} className="w-full">
-            <TabsList className="mb-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg shadow-sm rounded-2xl p-2">
+            <TabsList className="mb-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg shadow-sm rounded-2xl bg-muted text-muted-foreground inline-flex h-9 items-center justify-center rounded-lg p-0 w-full md:w-fit">
               <TabsTrigger
                 value="overview"
-                className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white px-6 py-3"
+                className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white px-3 py-2"
               >
                 <PieChart className="mr-2 h-4 w-4" />
                 Overview
