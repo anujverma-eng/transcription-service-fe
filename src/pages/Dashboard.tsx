@@ -5,7 +5,6 @@ import { JobsTable } from "@/components/JobsTable";
 import { UploadDialog } from "@/components/UploadDialog";
 import { UsageStats } from "@/components/UsageStats";
 import {
-  deleteJob,
   fetchJobs,
   fetchUsage,
   fetchUsageStats,
@@ -19,16 +18,18 @@ import {
   selectTranscriptionStatus,
   selectUsage,
   selectUsageStats,
-  setSelectedJob,
+  setSelectedJob
 } from "@/features/transcription/transcriptionSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import React, { useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UsageNotificationDialog } from "@/components/ui/UsageNotification";
+import { UsageStatsTable } from "@/components/UsageStatsTable";
+import { getProfile } from "@/features/auth/authSlice";
+import { paymentHistory } from "@/features/payment/paymentSlice";
 import { uploadFileToS3WithProgress } from "@/features/transcription/s3UploadApi";
 import { TranscriptionJob } from "@/features/transcription/transcriptionApi";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
@@ -36,9 +37,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BarChart2, FileAudio2, Maximize2, Menu, Minimize2, RefreshCw, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { Drawer } from "vaul";
-import { UsageStatsTable } from "@/components/UsageStatsTable";
-import { getProfile } from "@/features/auth/authSlice";
-import { paymentHistory } from "@/features/payment/paymentSlice";
+import { Skeleton } from "@/components/ui/skeleton";
 const MotionUploadCloud = motion(UploadCloud);
 
 // A helper to read audio duration
@@ -63,6 +62,40 @@ async function getAudioDuration(file: File): Promise<number> {
   });
 }
 
+// Add this component before the Dashboard component
+const TableSkeleton = () => (
+  <div className="space-y-3">
+    <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+    <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+    <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+    <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  </div>
+);
+
 export default function Dashboard() {
   const dispatch = useAppDispatch();
   const usage = useAppSelector(selectUsage);
@@ -72,17 +105,6 @@ export default function Dashboard() {
   const selectedJob = useAppSelector(selectSelectedJob);
   const status = useAppSelector(selectTranscriptionStatus);
   const pagination = useAppSelector(selectPagination);
-  const { user: userDetails, status: authStatus } = useAppSelector((state) => state.auth);
-  const { history, status: paymentStatus } = useAppSelector((state) => state.payment);
-
-  console.log({
-    usage,
-    usageStats,
-    userDetails,
-    authStatus,
-    history,
-    paymentStatus,
-  })
 
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showJobDetailDialog, setShowJobDetailDialog] = useState(false);
@@ -94,6 +116,7 @@ export default function Dashboard() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
+  const [_queryInSearch, setQueryInSearch] = useState("");
   const [dragActive, setDragActive] = useState(false);
 
   const [expanded, setExpanded] = useState(false);
@@ -101,19 +124,46 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("transcriptions");
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Initial fetch
-  useEffect(() => {
-    dispatch(getProfile())
-    dispatch(paymentHistory())
-    dispatch(fetchUsage());
-    dispatch(fetchUsageStats());
-    dispatch(fetchJobs({ page, limit, query: searchQuery }));
-  }, [limit, page, searchQuery, dispatch]);
+  // Combine loading states into one
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Re-fetch jobs if page/limit changes
+  // Handle page changes
   useEffect(() => {
-    dispatch(fetchJobs({ page, limit, query: searchQuery }));
-  }, [page, limit, searchQuery, dispatch]);
+    setIsLoading(true);
+    dispatch(fetchJobs({ page, limit, query: _queryInSearch }))
+      .finally(() => setIsLoading(false));
+  }, [page, limit, dispatch, _queryInSearch]);
+
+  // Initial fetch for other data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          dispatch(getProfile()),
+          dispatch(paymentHistory()),
+          dispatch(fetchUsage()),
+          dispatch(fetchUsageStats()),
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchInitialData();
+  }, [dispatch]);
+
+  // Add this near your other state declarations
+  const [showInitialTooltip, setShowInitialTooltip] = useState(true);
+
+  // Add this effect after your other useEffects
+  useEffect(() => {
+    // Show tooltip for 2 seconds when component mounts
+    const timer = setTimeout(() => {
+      setShowInitialTooltip(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   function handleDrag(e: React.DragEvent) {
     e.preventDefault();
@@ -168,9 +218,9 @@ export default function Dashboard() {
       return;
     }
 
-    // Minimum 30s check
-    if (durationSeconds < 30) {
-      toast.error("Audio must be at least 30 seconds.");
+    // Minimum 10s check
+    if (durationSeconds < 10) {
+      toast.error("Audio must be at least 10 seconds.");
       resetDialog();
       return;
     }
@@ -215,7 +265,7 @@ export default function Dashboard() {
 
       // Refresh usage & job list
       dispatch(fetchUsage());
-      dispatch(fetchJobs({ page, limit, query: searchQuery }));
+      dispatch(fetchJobs({ page, limit, query: _queryInSearch }));
 
       setShowUploadDialog(false);
       setSelectedFile(null);
@@ -232,16 +282,6 @@ export default function Dashboard() {
     setSelectedFile(null);
   }
 
-  function handleDeleteJob(e: React.MouseEvent, jobId: string) {
-    e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this?")) return;
-
-    dispatch(deleteJob(jobId))
-      .unwrap()
-      .then(() => toast.success("Deleted successfully."))
-      .catch((err) => toast.error(err));
-  }
-
   function handleRowClick(jobId: string) {
     dispatch(getJobDetail(jobId))
       .unwrap()
@@ -255,7 +295,7 @@ export default function Dashboard() {
   }
 
   function handleRefreshLinks() {
-    if (!selectedJob) return;
+    if (!selectedJob || !selectedJob?._id) return;
     dispatch(getJobDetail(selectedJob._id))
       .unwrap()
       .then(() => {
@@ -268,7 +308,14 @@ export default function Dashboard() {
     if (!pagination || pagination?.totalPages <= 1) return null;
     return (
       <div className="flex items-center justify-between px-1">
-        <Button variant="outline" disabled={pagination.page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+        <Button 
+          variant="outline" 
+          disabled={pagination.page <= 1 || isLoading} 
+          onClick={() => {
+            const newPage = Math.max(1, page - 1);
+            setPage(newPage);
+          }}
+        >
           Prev
         </Button>
         <p className="text-sm text-[#1F2937]">
@@ -276,18 +323,16 @@ export default function Dashboard() {
         </p>
         <Button
           variant="outline"
-          disabled={pagination.page >= pagination.totalPages}
-          onClick={() => setPage((p) => p + 1)}
+          disabled={pagination.page >= pagination.totalPages || isLoading}
+          onClick={() => {
+            const newPage = Math.min(pagination.totalPages, page + 1);
+            setPage(newPage);
+          }}
         >
           Next
         </Button>
       </div>
     );
-  }
-
-  function doSearch() {
-    setPage(1);
-    dispatch(fetchJobs({ page: 1, limit, query: searchQuery }));
   }
 
   // Determine if the usage is nearing its limit (remaining < 40 seconds)
@@ -302,7 +347,7 @@ export default function Dashboard() {
     }
   }, [usage, thresholdMinutes]);
 
-  if (!jobs?.length && usage?.totalUsedMinutes === 0) {
+  if (!jobs?.length) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -457,31 +502,27 @@ export default function Dashboard() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="bg-white/70 border border-gray-300 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 rounded-md w-full pr-10"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        doSearch();
-                      }
-                    }}
                   />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setPage(1);
-                        dispatch(fetchJobs({ page: 1, limit, query: "" }));
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setIsLoading(true);
+                      dispatch(fetchJobs({ page: 1, limit, query: "" }))
+                        .finally(() => setIsLoading(false));
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
                 <Button
                   onClick={() => {
                     setPage(1);
-                    dispatch(fetchJobs({ page: 1, limit, query: searchQuery }));
+                    setIsLoading(true);
+                    setQueryInSearch(searchQuery);
+                    dispatch(fetchJobs({ page: 1, limit, query: _queryInSearch }))
+                      .finally(() => setIsLoading(false));
                   }}
                   className="bg-[#3B82F6] hover:bg-[#2563EB] transition-colors text-white shadow-lg px-4 py-2 rounded-md"
                 >
@@ -492,7 +533,7 @@ export default function Dashboard() {
                 <Button
                   onClick={() => {
                     // Re-fetch jobs using current page, limit, and searchQuery
-                    dispatch(fetchJobs({ page, limit, query: searchQuery }));
+                    dispatch(fetchJobs({ page, limit, query: _queryInSearch }));
                   }}
                   className="bg-[#3B82F6] hover:bg-[#2563EB] transition-colors text-white shadow-lg px-4 py-2 rounded-md flex items-center gap-1"
                 >
@@ -501,17 +542,36 @@ export default function Dashboard() {
                 </Button>
               </div>
 
-              <JobsTable
-                jobs={jobs}
-                status={status}
-                error={error}
-                handleRowClick={handleRowClick}
-                handleDeleteJob={handleDeleteJob}
-                currentPage={pagination?.page}
-                totalPages={pagination?.totalPages}
-                onPageChange={(p) => setPage(p)}
-                setShowUploadDialog={setShowUploadDialog}
-              />
+              <div className="h-[540px] overflow-y-auto relative bg-white rounded-lg shadow-sm">
+                {isLoading ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <TableSkeleton />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <JobsTable
+                      jobs={jobs}
+                      status={status}
+                      error={error}
+                      handleRowClick={handleRowClick}
+                      currentPage={pagination?.page}
+                      totalPages={pagination?.totalPages}
+                      onPageChange={(p) => setPage(p)}
+                      setShowUploadDialog={setShowUploadDialog}
+                    />
+                  </motion.div>
+                )}
+              </div>
 
               {renderPagination()}
             </TabsContent>
@@ -577,22 +637,32 @@ export default function Dashboard() {
                   side="right"
                   sideOffset={5}
                   align="center"
-                  className="bg-gray-100 text-sm text-gray-800 rounded-md shadow transition-all"
+                  className="bg-gray-200 text-sm text-gray-800 rounded-md shadow transition-all"
                 >
-                  <p>Collapse</p>
+                  <p>Collapse dashboard</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ) : (
             <TooltipProvider>
-              <Tooltip>
+              <Tooltip open={showInitialTooltip}>
                 <TooltipTrigger asChild>
                   <motion.button
                     key="expand"
                     initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.2 }}
+                    animate={{ 
+                      opacity: 1, 
+                      x: 0,
+                      y: showInitialTooltip ? [0, -4, 0] : 0
+                    }}
+                    transition={{ 
+                      duration: 0.2,
+                      y: {
+                        duration: 0.5,
+                        repeat: 3,
+                        ease: "easeInOut"
+                      }
+                    }}
                     onClick={() => setExpanded(true)}
                     className="bg-gray-100 hover:bg-gray-200 rounded-md p-2
                              transition-transform duration-200 hover:scale-105"
@@ -604,9 +674,9 @@ export default function Dashboard() {
                   side="right"
                   sideOffset={5}
                   align="center"
-                  className="bg-gray-100 text-sm text-gray-800 rounded-md shadow transition-all"
+                  className="bg-gray-200 text-sm text-gray-800 rounded-md shadow transition-all animate-bounce"
                 >
-                  <p>Expand</p>
+                  <p>Click to expand dashboard</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

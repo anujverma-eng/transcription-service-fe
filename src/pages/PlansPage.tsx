@@ -69,11 +69,11 @@ export default function PlansPage() {
   const { user: userDetails, status: authStatus } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (plans.length === 0) dispatch(fetchPublicPlans());
-    if (authStatus === "succeeded" && (!userDetails || userDetails.isPaid)) {
+    if (plans?.length === 0) dispatch(fetchPublicPlans());
+    if (authStatus === "succeeded" && !userDetails) {
       navigate("/dashboard");
     }
-  }, [dispatch, plans.length, userDetails, navigate, authStatus]);
+  }, [dispatch, plans?.length, userDetails, navigate, authStatus]);
 
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
@@ -95,8 +95,35 @@ export default function PlansPage() {
   } | null>(null);
 
   const sortedPlans = useMemo(() => {
-    return [...plans].sort((a: any, b: any) => a.sortOrder - b.sortOrder);
-  }, [plans]);
+    const sortedPlans = [...plans]
+      .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
+      .map((p: any) => ({
+        ...p,
+        btnText: "Get Started",
+      }));
+    if (!userDetails) {
+      sortedPlans?.forEach((p: any) => {
+        if (!p?.isPaid) {
+          p.btnText = "Current Plan";
+        }
+      });
+    }
+
+    if (userDetails && userDetails?.isPaid) {
+      return sortedPlans
+        .filter((p: any) => p.isPaid)
+        .map((p: any) => {
+          if (p._id === userDetails?.planId) {
+            p.btnText = "Buy Again (current plan)";
+          } else {
+            p.btnText = "Get More Minutes";
+          }
+          return p;
+        });
+    }
+
+    return sortedPlans;
+  }, [plans, userDetails]);
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat("en-US", {
@@ -267,7 +294,7 @@ export default function PlansPage() {
                       {plan.isPaid ? formatPrice(plan.price, plan.currency) : "Free"}
                     </span>
                     {plan.isPaid && plan.currency && (
-                      <span className="text-lg text-gray-500 dark:text-gray-400">/{plan.currency}/mo</span>
+                      <span className="text-lg text-gray-500 dark:text-gray-400">/{plan.currency}</span>
                     )}
                   </div>
                   <motion.div
@@ -275,7 +302,7 @@ export default function PlansPage() {
                     className="flex items-center gap-2 mb-6 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600"
                   >
                     <Clock className="h-5 w-5 text-blue-500 dark:text-blue-400" />
-                    <span className="text-gray-600 dark:text-gray-300">{plan.totalLimit} minutes/month</span>
+                    <span className="text-gray-600 dark:text-gray-300">{plan.totalLimit} minutes</span>
                   </motion.div>
                 </div>
                 <ul className="space-y-4 mb-8">
@@ -312,7 +339,7 @@ export default function PlansPage() {
                     <div className="flex items-center justify-center gap-2 transition-all">
                       <Rocket className="h-5 w-5 -translate-x-4 group-hover:translate-x-0 transition-transform" />
                       <span className="group-hover:translate-x-1 transition-transform">
-                        {plan.isPaid ? "Get Started" : "Current Plan"}
+                        {plan.btnText || "Get Started"}
                       </span>
                     </div>
                   </Button>

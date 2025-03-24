@@ -65,7 +65,7 @@ export default function AuthPage() {
 
   const validatePassword = (password: string) => {
     return (
-      password.length >= 8 &&
+      password?.length >= 8 &&
       /[A-Z]/.test(password) &&
       /[a-z]/.test(password) &&
       /[0-9]/.test(password) &&
@@ -89,10 +89,10 @@ export default function AuthPage() {
     // Validate after 500ms of no typing
     if (mode === "signup" || mode === "login") {
       setTimeout(() => {
-        if (!validateEmail(newEmail) && newEmail.length > 0) {
+        if (!validateEmail(newEmail) && newEmail?.length > 0) {
           setEmailError("Please enter a valid email address");
         }
-      }, 500);
+      }, 100);
     }
   };
 
@@ -102,7 +102,7 @@ export default function AuthPage() {
     setPasswordError(""); // Clear error when typing
 
     // Validate after 500ms of no typing
-    if (mode === "signup" && newPassword.length > 0) {
+    if (mode === "signup" && newPassword?.length > 0) {
       setTimeout(() => {
         if (!validatePassword(newPassword)) {
           setPasswordError(

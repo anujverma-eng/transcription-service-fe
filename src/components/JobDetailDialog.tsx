@@ -1,15 +1,15 @@
 // src/features/dashboard/components/JobDetailDialog.tsx
 
-import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Download, FileAudio2, RefreshCw, Trash2, Text, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { Download, FileAudio2, Loader2, RefreshCw, Text } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface JobDetailDialogProps {
   showJobDetailDialog: boolean;
@@ -24,7 +24,7 @@ export function JobDetailDialog({
   setShowJobDetailDialog,
   selectedJob,
   handleRefreshLinks,
-  handleDeleteJob,
+  // handleDeleteJob,
 }: JobDetailDialogProps) {
 
   const [transcriptText, setTranscriptText] = useState("");
@@ -73,15 +73,15 @@ export function JobDetailDialog({
   }
 
   // Destructure
-  const { _id, fileName, status, audioFileLink, transcriptionFileLink } = selectedJob;
+  const { fileName, status, audioFileLink, transcriptionFileLink } = selectedJob;
 
   // Handlers
-  const handleDelete = (e: React.MouseEvent) => {
-    if (!handleDeleteJob) return;
-    e.stopPropagation();
-    handleDeleteJob(e, _id);
-    setShowJobDetailDialog(false);
-  };
+  // const handleDelete = (e: React.MouseEvent) => {
+  //   if (!handleDeleteJob) return;
+  //   e.stopPropagation();
+  //   handleDeleteJob(e, _id);
+  //   setShowJobDetailDialog(false);
+  // };
 
   const handleDownload = async (url: string, type: "audio" | "transcript") => {
     try {
@@ -110,7 +110,8 @@ export function JobDetailDialog({
           setTranscriptText(textData);
         })
         .catch((err) => {
-          toast.error("Failed to refresh transcript: " + err);
+          console.log(err);
+          toast.error("Failed to refresh transcript, Pls try again later");
         });
     }
     handleRefreshLinks();
@@ -170,7 +171,7 @@ export function JobDetailDialog({
 
               {/* Delete */}
 
-              <TooltipProvider>
+              {/* <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button className="p-2 bg-gray-100 hover:bg-gray-100 rounded-md" onClick={handleDelete} title="Delete">
@@ -186,7 +187,7 @@ export function JobDetailDialog({
                     Delete
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
+              </TooltipProvider> */}
 
               {/* Download Audio */}
               {audioFileLink && (

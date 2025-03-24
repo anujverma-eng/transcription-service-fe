@@ -46,6 +46,6 @@ export interface ProfileResponse {
     isPaid: boolean;
     totalLimit: number;
     endDate: string | null;
-    // ...
+    planId: string;
   };
 }

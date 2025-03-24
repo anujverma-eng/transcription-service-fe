@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle2, CreditCard, MessageSquare, PieChart, Star, Trash2, User, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import SupportForm from "@/components/SupportForm";
 
 export default function MyAccountPage() {
   const dispatch = useAppDispatch();
@@ -23,7 +24,6 @@ export default function MyAccountPage() {
   const [review, setReview] = useState("");
 
   const usage = useAppSelector((state) => state.transcription.usage);
-  // const _usageStats = useAppSelector((state) => state.transcription.usageStats);
   const { history, status: paymentStatus } = useAppSelector((state) => state.payment);
   const { user: userDetails, status: authStatus } = useAppSelector((state) => state.auth);
   const { feedback, status: _feedbackStatus, error: feedbackError } = useAppSelector((state) => state.feedback);
@@ -46,13 +46,14 @@ export default function MyAccountPage() {
   const isPaid = userDetails?.isPaid;
   const isLoading = authStatus === "loading" || transcriptionStatus === "loading" || paymentStatus === "loading";
 
-  /** Submit new feedback */
   const handleSubmitFeedback = (e: React.FormEvent) => {
     e.preventDefault();
+    if (rating === 0 || review.trim() === "") {
+      return;
+    }
     dispatch(createFeedbackThunk({ rating, review }));
   };
 
-  /** Confirm & delete existing feedback */
   const handleDeleteFeedback = () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete your feedback? This action cannot be undone."
@@ -65,7 +66,6 @@ export default function MyAccountPage() {
   return (
     <div className="min-h-screen py-8 bg-gradient-to-b from-gray-50/50 to-purple-50/50 dark:from-gray-900 dark:to-gray-950">
       <div className="container mx-auto px-4">
-        {/* LOADING SKELETONS */}
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((i) => (
@@ -73,8 +73,6 @@ export default function MyAccountPage() {
             ))}
           </div>
         )}
-
-        {/* MAIN CONTENT */}
         {!isLoading && (
           <Tabs defaultValue="overview" onValueChange={(val) => setActiveTab(val)} className="w-full">
             <TabsList className="mb-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg shadow-sm rounded-2xl p-2">
@@ -92,19 +90,25 @@ export default function MyAccountPage() {
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Feedback
               </TabsTrigger>
+              <TabsTrigger
+                value="support"
+                className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-blue-600 data-[state=active]:text-white px-6 py-3"
+              >
+                <User className="mr-2 h-4 w-4" />
+                Support
+              </TabsTrigger>
             </TabsList>
 
             {/* OVERVIEW TAB */}
             <TabsContent value="overview">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                {/* PAGE HEADER */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
                     <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                       Account Overview
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-2">
-                      Manage your account settings and view usage statistics
+                      Manage your account settings and view usage statistics.
                     </p>
                   </div>
                   {!isPaid && (
@@ -117,10 +121,7 @@ export default function MyAccountPage() {
                     </Button>
                   )}
                 </div>
-
-                {/* PROFILE & USAGE CARDS */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Profile Card: redesigned for label-value alignment */}
                   <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-sm p-6">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-xl">
@@ -128,16 +129,13 @@ export default function MyAccountPage() {
                       </div>
                       <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Profile Information</h2>
                     </div>
-                    {/* GRID with label/value columns */}
                     <div className="grid grid-cols-[auto,1fr] gap-y-4 gap-x-2 text-gray-600 dark:text-gray-300">
                       <span className="text-sm text-gray-500 dark:text-gray-400">Name</span>
                       <span className="font-medium text-gray-800 dark:text-gray-100">{userDetails?.name || "--"}</span>
-
                       <span className="text-sm text-gray-500 dark:text-gray-400">Email</span>
                       <span className="font-medium text-gray-800 dark:text-gray-100 break-all">
                         {userDetails?.email || "--"}
                       </span>
-
                       <span className="text-sm text-gray-500 dark:text-gray-400">Plan</span>
                       <span
                         className={cn(
@@ -157,7 +155,6 @@ export default function MyAccountPage() {
                     </div>
                   </div>
 
-                  {/* Usage Card */}
                   <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-sm p-6">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl">
@@ -177,9 +174,7 @@ export default function MyAccountPage() {
                           <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gradient-to-r from-purple-600 to-blue-600"
-                              style={{
-                                width: `${(usage.totalUsedMinutes / usage.totalLimit) * 100}%`,
-                              }}
+                              style={{ width: `${(usage.totalUsedMinutes / usage.totalLimit) * 100}%` }}
                             />
                           </div>
                         </div>
@@ -199,12 +194,11 @@ export default function MyAccountPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-gray-500 dark:text-gray-400 p-4 text-center">No usage data available</div>
+                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">No usage data available</div>
                     )}
                   </div>
                 </div>
 
-                {/* Payment History */}
                 <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-sm p-6">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="p-3 bg-green-100 dark:bg-green-900/50 rounded-xl">
@@ -232,10 +226,7 @@ export default function MyAccountPage() {
                                 {new Date(item.createdAt).toLocaleDateString()}
                               </td>
                               <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">
-                                {(item.amount / 100).toLocaleString("en-IN", {
-                                  style: "currency",
-                                  currency: "INR",
-                                })}
+                                {(item.amount / 100).toLocaleString("en-IN", { style: "currency", currency: "INR" })}
                               </td>
                               <td className="px-4 py-3">
                                 <span
@@ -275,12 +266,10 @@ export default function MyAccountPage() {
                     </div>
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Your Feedback</h2>
                   </div>
-
                   {feedback ? (
                     <div className="space-y-6">
                       <div className="p-4 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl">
                         <div className="flex items-center gap-1 mb-2">
-                          {/* Render the rating from feedback */}
                           {[...Array(feedback.rating)].map((_, i) => (
                             <Star key={i} className="h-5 w-5 text-yellow-500 fill-yellow-400" />
                           ))}
@@ -290,14 +279,13 @@ export default function MyAccountPage() {
                       <Button
                         variant="destructive"
                         onClick={handleDeleteFeedback}
-                        className="w-full md:w-auto gap-2 bg-red-400 hover:bg-red-700"
+                        className="w-full md:w-auto gap-2 bg-red-600 hover:bg-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
                         Delete Feedback
                       </Button>
                     </div>
                   ) : (
-                    // FEEDBACK FORM
                     <form onSubmit={handleSubmitFeedback} className="space-y-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -321,7 +309,6 @@ export default function MyAccountPage() {
                           ))}
                         </div>
                       </div>
-
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           Review
@@ -333,14 +320,13 @@ export default function MyAccountPage() {
                           className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                       </div>
-
                       <Button
                         type="submit"
+                        disabled={rating === 0 || review.trim() === ""}
                         className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg shadow-purple-500/20"
                       >
                         Submit Feedback
                       </Button>
-
                       {feedbackError && (
                         <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl">
                           {feedbackError}
@@ -348,6 +334,21 @@ export default function MyAccountPage() {
                       )}
                     </form>
                   )}
+                </div>
+              </motion.div>
+            </TabsContent>
+
+            {/* SUPPORT TAB */}
+            <TabsContent value="support">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-sm p-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Contact Us / Support</h2>
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">
+                    Please fill out the form below and we'll connect with you soon. Allow some time for us to respond.
+                  </p>
+                  <div>
+                    <SupportForm />
+                  </div>
                 </div>
               </motion.div>
             </TabsContent>

@@ -41,3 +41,8 @@ export async function getPublicFeedback(): Promise<Feedback[]> {
   const res = await apiClient.get("/feedback/public");
   return res.data?.data || res.data; 
 }
+
+export async function sendSupportMessage(data: { subject: string; email: string; message: string; }) {
+  const res = await apiClient.post("/contact-us/public/create", data);
+  return res.data;
+}

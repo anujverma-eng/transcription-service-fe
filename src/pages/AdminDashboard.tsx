@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     console.log(feedbackId, isSelected, userName);
     let newSelected = [...selectedFeedbackIds];
     if (isSelected) {
-      if (selectedFeedbackIds.length >= 15) {
+      if (selectedFeedbackIds?.length >= 15) {
         alert("You cannot select more than 15 feedbacks.");
         return;
       }

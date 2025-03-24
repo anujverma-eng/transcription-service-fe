@@ -1,17 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
 import {
   Download,
   Eye,
   FileAudio2,
   FileText,
-  Music,
-  Trash2
+  Music
 } from "lucide-react";
 import React from "react";
-import { formatDistanceToNow } from "date-fns";
 
 
 // Types
@@ -20,7 +19,7 @@ interface JobsTableProps {
   status: string; // "idle" | "loading" | "succeeded" | "failed"
   error?: string | null;
   handleRowClick: (jobId: string) => void;
-  handleDeleteJob: (e: React.MouseEvent, jobId: string) => void;
+  // handleDeleteJob: (e: React.MouseEvent, jobId: string) => void;
   handleDownloadAudio?: (e: React.MouseEvent, jobId: string) => void;
   handleDownloadTranscript?: (e: React.MouseEvent, jobId: string) => void;
   currentPage?: number;
@@ -34,7 +33,7 @@ export function JobsTable({
   status,
   error,
   handleRowClick,
-  handleDeleteJob,
+  // handleDeleteJob,
   handleDownloadAudio,
   handleDownloadTranscript,
 }: JobsTableProps) {
@@ -191,7 +190,7 @@ export function JobsTable({
                       <FileText className="h-4 w-4" />
                     </Button>
                   )}
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     size="icon"
                     className="text-red-500"
@@ -202,7 +201,7 @@ export function JobsTable({
                     }}
                   >
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             ))}

@@ -19,10 +19,16 @@ interface UsageStatsProps {
 }
 
 export function UsageStats({ usage, status }: UsageStatsProps) {
-  const words: string[] = [];
+  // Initialize words array before using it
+  const words = [
+    `Usage resets daily at midnight. You have ${(usage?.remainingMinutes || 0).toFixed(2)} minutes remaining today.`,
+    "Remember to proofread your transcriptions!",
+    "Shortcuts help transcribe faster!",
+    "Accuracy improves with regular practice.",
+  ];
 
   const [text] = useTypewriter({
-    words: words,
+    words: words || [], // Provide fallback empty array
     loop: true,
     delaySpeed: 2500,
     deleteSpeed: 50,
@@ -47,13 +53,6 @@ export function UsageStats({ usage, status }: UsageStatsProps) {
     }
     return "bg-green-500 text-white";
   }
-
-  [
-   `Usage resets daily at midnight. You have ${remainingMinutes.toFixed(2)} minutes remaining today.`,
-    "Remember to proofread your transcriptions!",
-    "Shortcuts help transcribe faster!",
-    "Accuracy improves with regular practice.",
-  ].forEach((word) => words.push(word));
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}>
@@ -179,7 +178,7 @@ export function UsageStats({ usage, status }: UsageStatsProps) {
                   <Lightbulb className="group-hover:text-yellow-500 transition-colors duration-200" />
                 </motion.div>
                 <p className="text-sm text-gray-600">
-                  <span className="font-medium text-blue-600">Pro Tip:</span> {text} <Cursor cursorStyle="|" />
+                  <span className="font-medium text-blue-600">Pro Tip:</span> {text || ''} <Cursor cursorStyle="|" />
                 </p>
               </div>
             </div>

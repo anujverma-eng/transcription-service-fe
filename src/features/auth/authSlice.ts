@@ -16,6 +16,7 @@ interface User {
   subscriptionPlan?: string;
   isPaid?: boolean;
   totalLimit?: number;
+  planId?: string;
 }
 
 interface AuthState {
@@ -144,6 +145,7 @@ const authSlice = createSlice({
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
           isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
+          planId: subscription?.planId,
         };
       })
       .addCase(signUpUser.rejected, (state, action) => {
@@ -168,6 +170,7 @@ const authSlice = createSlice({
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
           isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
+          planId: subscription?.planId,
         };
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -206,6 +209,7 @@ const authSlice = createSlice({
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
           isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
+          planId: subscription?.planId,
         };
       })
       .addCase(resetPassword.rejected, (state, action) => {
@@ -244,6 +248,7 @@ const authSlice = createSlice({
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
           isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
+          planId: subscription?.planId,
         };
       })
       .addCase(completeGoogleAuth.rejected, (state, action) => {
@@ -268,6 +273,7 @@ const authSlice = createSlice({
           subscriptionPlan: subscription.isPaid ? 'paid' : 'free',
           isPaid: subscription.isPaid,
           totalLimit: subscription.totalLimit,
+          planId: subscription?.planId,
         };
       })
       .addCase(getProfile.rejected, (state, action) => {

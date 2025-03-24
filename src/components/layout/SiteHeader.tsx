@@ -26,12 +26,16 @@ import {
 import { cn } from "@/lib/utils";
 import {
   Gem,
+  HelpCircle,
+  Info,
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageSquare,
   Rocket,
   Settings,
   Shield,
+  Tag,
   User,
   Zap,
 } from "lucide-react";
@@ -42,7 +46,7 @@ export default function SiteHeader() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // For hiding certain links if we’re already on that page:
+  // For hiding certain links if we're already on that page:
   const isOnDashboard = location.pathname.startsWith("/dashboard");
   const isOnPlansPage = location.pathname.startsWith("/plans");
   const isOnMyAccount = location.pathname.startsWith("/my-account");
@@ -89,6 +93,40 @@ export default function SiteHeader() {
           </span>
           AudioLekh
         </Link>
+
+        {/* Center navigation links - Only show when user is NOT logged in */}
+        {!isLoggedIn && (
+          <nav className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
+            <a 
+              href="/#about" 
+              className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              {/* <Tag className="h-4 w-4" /> */}
+              <span>About Us</span>
+            </a>
+            <a 
+              href="/#pricing" 
+              className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              {/* <Tag className="h-4 w-4" /> */}
+              <span>Pricing</span>
+            </a>
+            <a 
+              href="/#faq" 
+              className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              {/* <HelpCircle className="h-4 w-4" /> */}
+              <span>FAQ</span>
+            </a>
+            <a 
+              href="/#contact" 
+              className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              {/* <MessageSquare className="h-4 w-4" /> */}
+              <span>Contact Us</span>
+            </a>
+          </nav>
+        )}
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-3">
@@ -146,6 +184,36 @@ export default function SiteHeader() {
                     "
                   >
                     PRO
+                  </span>
+                </Link>
+              )}
+
+              {/* Show Buy More button for paid users */}
+              {isPaidPlan && !isOnPlansPage && (
+                <Link
+                  to="/plans"
+                  className="
+                    inline-flex items-center gap-2 
+                    px-2 py-2 text-white
+                    text-sm
+                    bg-gradient-to-r from-purple-600 to-blue-500
+                    rounded-md shadow-md
+                    transition-transform
+                    hover:scale-105
+                    hover:from-purple-600 hover:to-blue-600
+                    active:scale-95
+                  "
+                >
+                  <Gem className="h-4 w-4" />
+                  <span>Buy More</span>
+                  <span
+                    className="
+                      ml-2 py-0.5 px-1.5
+                      rounded-full bg-white/20
+                      text-sm
+                    "
+                  >
+                    MINUTES
                   </span>
                 </Link>
               )}
@@ -322,6 +390,53 @@ function MobileNavMenu({
         </SheetHeader>
 
         <nav className="flex flex-col gap-1">
+          {/* If user not logged in, show navigation links */}
+          {!isLoggedIn && (
+            <>
+              <SheetClose asChild>
+                <a 
+                  href="/#about" 
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 font-medium"
+                >
+                  <Info className="h-5 w-5 text-blue-500" />
+                  <span>About Us</span>
+                </a>
+              </SheetClose>
+              
+              <SheetClose asChild>
+                <a 
+                  href="/#pricing" 
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 font-medium"
+                >
+                  <Tag className="h-5 w-5 text-blue-500" />
+                  <span>Pricing</span>
+                </a>
+              </SheetClose>
+              
+              <SheetClose asChild>
+                <a 
+                  href="/#faq" 
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 font-medium"
+                >
+                  <HelpCircle className="h-5 w-5 text-blue-500" />
+                  <span>FAQ</span>
+                </a>
+              </SheetClose>
+              
+              <SheetClose asChild>
+                <a 
+                  href="/#contact" 
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 font-medium"
+                >
+                  <MessageSquare className="h-5 w-5 text-blue-500" />
+                  <span>Contact Us</span>
+                </a>
+              </SheetClose>
+              
+              <div className="border-t my-2 border-gray-200 dark:border-gray-700"></div>
+            </>
+          )}
+
           {/* If user not logged in, show "Get Started" & "Login" */}
           {!isLoggedIn && !isAuthPage && (
             <SheetClose asChild>
@@ -398,6 +513,20 @@ function MobileNavMenu({
                     <Badge variant="outline" className="ml-2">
                       PRO
                     </Badge>
+                  </Button>
+                </SheetClose>
+              )}
+
+              {/* Show Buy More button for paid users */}
+              {isPaidPlan && !isOnPlansPage && (
+                <SheetClose asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-lg py-4 bg-gradient-to-r from-purple-600 to-blue-600 transition-colors"
+                    onClick={() => navigate("/plans")}
+                  >
+                    <Gem className="mr-3 h-5 w-5" />
+                    Buy More
                   </Button>
                 </SheetClose>
               )}
